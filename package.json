@@ -1,0 +1,23 @@
+{
+  "name": "real-estate-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kleverfp/real-estate-game.git"
+  },
+  "author": "Klever Ferreira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kleverfp/real-estate-game/issues"
+  },
+  "homepage": "https://github.com/kleverfp/real-estate-game#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  }
+}
