@@ -23,6 +23,9 @@ module.exports = {
         allowNull:false
       }
      });
+     await queryInterface.commitTransaction();
+     await queryInterface.startTransaction();
+     
   },
 
   async down (queryInterface, Sequelize) {
