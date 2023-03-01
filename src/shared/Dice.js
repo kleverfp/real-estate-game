@@ -11,4 +11,4 @@ class Dice{
     }
 }
 
-export default Dice;
+module.exports = Dice;

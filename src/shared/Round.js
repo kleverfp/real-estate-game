@@ -1,5 +1,7 @@
-import BuyBuildingService from "../modules/buildings/services/BuyBuildingService";
-import CheckBuildingHasOwnerService from "../modules/buildings/services/CheckBuildingHasOwnerService";
+const BuyBuildingService =  require( "../modules/buildings/services/BuyBuildingService");
+const CheckBuildingHasOwnerService =  require( "../modules/buildings/services/CheckBuildingHasOwnerService");
+const RemovePlayerBuildingsOwnerService =  require("../modules/buildings/services/RemovePlayerBuildingsOwnerService");
+const Dice = require('./Dice');
 
 class Round{
     dice;
@@ -11,7 +13,7 @@ class Round{
     }
 
     async start(players, buildings){
-        const allowedPlayers = players.filter(player=>player.eliminated == false);
+        const allowedPlayers = players.filter(player=>player.eliminated === false);
         const orderedPlayers =  this.shufflePlayers(allowedPlayers);
         this.setRoundCount(this.getRoundCount()+ 1);
 
@@ -30,7 +32,7 @@ class Round{
                 if(buildingOwner){
                     const playerOwner = allowedPlayers.filter((player)=>player.id === buildingOwner.user_id);
                     if(playerOwner){
-                        this.playerRentBuilding(playerOwner,player, buildOccupied.rent_value);
+                        await this.playerRentBuilding(playerOwner,player, buildOccupied.rent_value);
                     }
                 }
 
@@ -102,7 +104,7 @@ class Round{
         }
     }
 
-    playerRentBuilding(playerOwner,player,rentValue){
+    async playerRentBuilding(playerOwner,player,rentValue){
 
 
         if(player.balance - rentValue > 0){
@@ -115,6 +117,8 @@ class Round{
             this.setPlayersEliminated(player);
             playerOwner.balance += player.balance;
             player.balance=0;
+            const removePlayerBuildings = new RemovePlayerBuildingsOwnerService();
+            await removePlayerBuildings.execute(player);
         }
     }
 
@@ -128,8 +132,7 @@ class Round{
             players[j] = temp;
         }
 
-        console.log("players",players);
-          
+         return players; 
     }
 
     getDice(){
@@ -140,7 +143,7 @@ class Round{
         return this.playersEliminated;
     }
     setPlayersEliminated(player){
-        this.getPlayersEliminated.push(player);
+        this.playersEliminated.push(player);
     }
 
     getRoundCount(){
@@ -152,4 +155,4 @@ class Round{
     }
 }
 
-export default Round;
+module.exports = Round;

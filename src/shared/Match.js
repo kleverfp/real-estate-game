@@ -1,23 +1,23 @@
-import Dice from "./Dice";
-import Round from "./Round";
+const Round  = require("./Round");
 
 class Match{
     players = [];
     buildings=[];
     round;
     constructor(
-        players
+        players,
+        buildings
     ){
         this.players = players;
         this.buildings = buildings;
         this.round = new Round();
     }
 
-    initialSetup(){
+    async start(){
 
         const initialPlayers =  this.getPlayers();
         const buildings = this.getBuildings();
-        this.getRound().start(initialPlayers,buildings);
+        await this.getRound().start(initialPlayers,buildings);
        
 
     }
@@ -45,4 +45,4 @@ class Match{
 
 }
 
-export default Match;
+module.exports =  Match;

@@ -6,7 +6,7 @@ module.exports={
     password:'iblue',
     database:'realestate',
     define:{
-        timestamps:true,
+        timestamps:false,
         underscored:true
     }
 }
