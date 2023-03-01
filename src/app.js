@@ -5,7 +5,8 @@ const CheckDataBaseConnectionService  = require('./database/services/CheckDataBa
 
 const app = express();
 
-app.use('/simulator',require('./shared/http/routes/simulation.routes'))
+app.use('/simulator',require('./shared/http/routes/simulation.routes'));
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, async()=>{
