@@ -4,6 +4,7 @@ import CheckBuildingHasOwnerService from "../modules/buildings/services/CheckBui
 class Round{
     dice;
     playersEliminated = [];
+    roundCount = 0;
 
     constructor(){
         this.dice = new Dice();
@@ -12,6 +13,8 @@ class Round{
     async start(players, buildings){
         const allowedPlayers = players.filter(player=>player.eliminated == false);
         const orderedPlayers =  this.shufflePlayers(allowedPlayers);
+        this.setRoundCount(this.getRoundCount()+ 1);
+
         for await (let player of orderedPlayers){
 
             const points = this.getDice().roll();
@@ -23,9 +26,8 @@ class Round{
 
             const buildOccupied =  buildings.filter(building =>building.position === player.position);
             if(buildOccupied){
-                const buildingOwner  = isBuildingHasOwner(buildOccupied);
+                const buildingOwner  = this.isBuildingHasOwner(buildOccupied);
                 if(buildingOwner){
-                    
                     const playerOwner = allowedPlayers.filter((player)=>player.id === buildingOwner.user_id);
                     if(playerOwner){
                         this.playerRentBuilding(playerOwner,player, buildOccupied.rent_value);
@@ -36,13 +38,32 @@ class Round{
                    await  this.checkPurchaseByPlayerBehavior(buildOccupied,player);
                 }
 
-                if(players.length - this.getPlayersEliminated().length == 1){
-                    this.setPlayersEliminated(player);
-                    return this.getPlayersEliminated();
-                }
+                this.checkEndGame();
             }
 
         };
+    }
+
+
+    checkEndGame(){
+
+        if(players.length - this.getPlayersEliminated().length == 1){
+            this.setPlayersEliminated(player);
+            return this.getPlayersEliminated();
+        }
+
+        if(this.getRoundCount() >=1000){
+            const playersInGame = players.filter(player => player.eliminated == false);
+            const orderedPlayersByBalance = playersInGame.sort((playerA,playerB)=>{
+                return playerA.balance - playerB.balance
+            });
+
+            orderedPlayersByBalance.map(player=>{
+                this.setPlayersEliminated(player);
+            });
+
+            return this.getPlayersEliminated();
+        }
     }
 
 
@@ -56,7 +77,7 @@ class Round{
            player.behavior === 'cautious' && (playerBalance  - buildingPrice > 80) ||
            player.behavior === 'random' && Math.round(Math.random()) == 1){
             
-            await playerPurchaseBuilding(player,buildOccupied);
+            await this.playerPurchaseBuilding(player,buildOccupied);
            
         }  
         
@@ -120,6 +141,14 @@ class Round{
     }
     setPlayersEliminated(player){
         this.getPlayersEliminated.push(player);
+    }
+
+    getRoundCount(){
+        return this.roundCount;
+    }
+
+    setRoundCount(roundValue){
+        this.roundCount = roundValue
     }
 }
 
