@@ -9,6 +9,7 @@ const connectionDB = new Sequeize(dbConfig);
 User.init(connectionDB);
 Building.init(connectionDB);
 UserBuildings.init(connectionDB);
+UserBuildings.associate(connectionDB.models)
 
 
 

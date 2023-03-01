@@ -27,44 +27,56 @@ class Round{
             }
 
             const buildOccupied =  buildings.filter(building =>building.position === player.position);
-            if(buildOccupied){
-                const buildingOwner  = this.isBuildingHasOwner(buildOccupied);
+            if(buildOccupied && buildOccupied.length> 0){
+                const buildingOwner  = await this.isBuildingHasOwner(buildOccupied[0]);
                 if(buildingOwner){
                     const playerOwner = allowedPlayers.filter((player)=>player.id === buildingOwner.user_id);
                     if(playerOwner){
-                        await this.playerRentBuilding(playerOwner,player, buildOccupied.rent_value);
+                        await this.playerRentBuilding(playerOwner,player, buildOccupied[0].rent_value);
                     }
                 }
 
                 else{
-                   await  this.checkPurchaseByPlayerBehavior(buildOccupied,player);
+                   await  this.checkPurchaseByPlayerBehavior(buildOccupied[0],player);
                 }
 
-                this.checkEndGame();
+               
             }
 
         };
+
+        if(!this.checkEndGame(players)){
+            await this.start(players,buildings);
+        }
+
+        return this.getPlayersEliminated();
     }
 
 
-    checkEndGame(){
+    checkEndGame(players){
 
-        if(players.length - this.getPlayersEliminated().length == 1){
-            this.setPlayersEliminated(player);
-            return this.getPlayersEliminated();
+        const playersInGame = players.filter((player)=>player.eliminated === false)
+
+        if(playersInGame.length === 1){
+           
+            this.setPlayersEliminated(playersInGame[0]);
+            return true
         }
 
-        if(this.getRoundCount() >=1000){
-            const playersInGame = players.filter(player => player.eliminated == false);
+        else if(this.getRoundCount() >=10){
+          
+            
             const orderedPlayersByBalance = playersInGame.sort((playerA,playerB)=>{
-                return playerA.balance - playerB.balance
+                return playerB.balance - playerA.balance
             });
+          
 
-            orderedPlayersByBalance.map(player=>{
+            for(let player of orderedPlayersByBalance){
+               
                 this.setPlayersEliminated(player);
-            });
+            };
 
-            return this.getPlayersEliminated();
+            return true;
         }
     }
 
@@ -108,8 +120,8 @@ class Round{
 
 
         if(player.balance - rentValue > 0){
-            player.balance -= buildingOwner.rent_value;
-            playerOwner.balance += buildingOwner.rent_value;
+            player.balance -= brentValue;
+            playerOwner.balance += rentValue;
         }
 
         else{
@@ -153,6 +165,8 @@ class Round{
     setRoundCount(roundValue){
         this.roundCount = roundValue
     }
+
+   
 }
 
 module.exports = Round;

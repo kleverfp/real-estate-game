@@ -17,7 +17,8 @@ class Match{
 
         const initialPlayers =  this.getPlayers();
         const buildings = this.getBuildings();
-        await this.getRound().start(initialPlayers,buildings);
+        const result = await this.getRound().start(initialPlayers,buildings);
+        return result;
        
 
     }

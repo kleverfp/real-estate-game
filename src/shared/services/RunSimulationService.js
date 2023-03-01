@@ -20,6 +20,7 @@ class RunSimulationService{
 
         users.map((user)=>{
             user.eliminated = false;
+            user.position =0;
         });
        
 
@@ -29,7 +30,16 @@ class RunSimulationService{
        
 
         const match = new Match(users,buildings);
-        await match.start();
+        const result = await match.start();
+
+        const resultBehavior = result.map((player)=>{
+            return player.behavior;
+        });
+
+        return {
+            winner:resultBehavior[0],
+            players:resultBehavior
+        }
 
     }
 
